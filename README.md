@@ -41,7 +41,7 @@ lib/
 
 ### Prerequisites
 - Flutter SDK installed
-- A running instance of the [Study Sync backend] (LINK_TO_YOUR_BACKEND_REPO: https://github.com/Shimizu019/study-sync-api )
+- A running instance of the [Study Sync backend] (BACKEND_REPO: https://github.com/Shimizu019/study-sync-api )
 
 ### Setup
 1. Clone the repo
