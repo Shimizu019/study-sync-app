@@ -16,32 +16,33 @@ A Flutter mobile study planner app that helps students manage tasks, subjects, c
 ## Tech Stack
 
 - **Frontend:** Flutter (Dart)
-- **Backend:** PHP / MySQL REST API — see [study-sync-api](LINK_TO_YOUR_BACKEND_REPO)
+- **Backend:** PHP / MySQL REST API — see [Study Sync backend](https://github.com/Shimizu019/study-sync-api)
 - **State/Networking:** Custom service layer (`ApiService`) handling HTTP calls to the backend
 
 ## Project Structure
 
+```
 lib/
-├── models/ # Data models (task, subject, user, study_session)
+├── models/              # Data models (task, subject, user, study_session)
 ├── screens/
-│ ├── auth/ # Login, signup, forgot password
-│ │ └── study_session/ # Start, active, and session complete screens
-│ ├── subjects/ # Add/list subjects
-│ ├── tasks/ # Add, list, detail/edit tasks
-│ ├── timetable/ # Add class, view timetable
-│ ├── calendar/ # Calendar screen
-│ ├── home/ # Home dashboard
-│ └── profile/ # Profile screen
-├── services/ # API, auth, calendar, profile, session, subject,
-│ # task, and timetable service classes
-├── widgets/theme/ # App-wide theming
-└── main.dart # App entry point
-
+│   ├── auth/            # Login, signup, forgot password
+│   │   └── study_session/  # Start, active, and session complete screens
+│   ├── subjects/        # Add/list subjects
+│   ├── tasks/           # Add, list, detail/edit tasks
+│   ├── timetable/       # Add class, view timetable
+│   ├── calendar/        # Calendar screen
+│   ├── home/            # Home dashboard
+│   └── profile/         # Profile screen
+├── services/            # API, auth, calendar, profile, session, subject,
+│                        # task, and timetable service classes
+├── widgets/theme/       # App-wide theming
+└── main.dart            # App entry point
+```
 ## Getting Started
 
 ### Prerequisites
 - Flutter SDK installed
-- A running instance of the [Study Sync backend] (BACKEND_REPO: https://github.com/Shimizu019/study-sync-api )
+- A running instance of the [Study Sync backend](https://github.com/Shimizu019/study-sync-api)
 
 ### Setup
 1. Clone the repo
