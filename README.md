@@ -1,3 +1,4 @@
+---Ongoing!---
 # Study Sync
 
 A Flutter mobile study planner app that helps students manage tasks, subjects, class timetables, and study sessions — all synced to a live backend.
