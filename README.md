@@ -45,5 +45,4 @@ lib/
 - Flutter SDK installed
 - A running instance of the [Study Sync backend](https://github.com/Shimizu019/study-sync-api)
 
-### Setup
-1. Clone the repo
+### This repository is mainly for experimentation and learning. I use it to explore different programming languages, frameworks, and development concepts while expanding my technical skills. Some projects may be incomplete or experimental as I test new ideas and approaches.
