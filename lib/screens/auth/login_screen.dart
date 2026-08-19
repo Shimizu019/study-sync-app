@@ -2,9 +2,6 @@
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/theme/app_colors.dart';
-import '../../widgets/theme/app_constants.dart';
-import '../../widgets/theme/app_widgets.dart';
-import '../../widgets/theme/app_animations.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -136,30 +133,30 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                       Container(
                         height: 92,
                         width: 92,
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [AppColors.primary, AppColors.primaryLight],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
+                          color: Colors.white,
                           borderRadius: BorderRadius.circular(30),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withOpacity(0.28),
+                              color: AppColors.primary.withOpacity(0.18),
                               blurRadius: 16,
                               offset: const Offset(0, 10),
                             ),
                           ],
                         ),
-                        child: const Icon(
-                          Icons.menu_book_rounded,
-                          size: 46,
-                          color: Colors.white,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: Image.asset(
+                            'lib/Component/img/studySync Logo.jpg',
+                            fit: BoxFit.cover,
+                            semanticLabel: 'StudySync logo',
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        "Study Sync",
+                        "StudySync",
                         style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.w800,
