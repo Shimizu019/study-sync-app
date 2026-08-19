@@ -4,53 +4,53 @@ import 'package:flutter/material.dart';
 /// Follows WCAG AA contrast standards for accessibility
 class AppColors {
   // Primary Colors
-  static const Color primary = Color(0xFF6C52E6);
-  static const Color primaryLight = Color(0xFF8C74F7);
-  static const Color primaryDark = Color(0xFF5038C8);
-  static const Color primaryBg = Color(0xFFF4F1FF);
+  static const Color primary = Color(0xFF4F46E5);
+  static const Color primaryLight = Color(0xFF6366F1);
+  static const Color primaryDark = Color(0xFF3730A3);
+  static const Color primaryBg = Color(0xFFEEF2FF);
 
   // Soft design palette from mockup
-  static const Color softBg = Color(0xFFF5F1FF);
-  static const Color softSurface = Color(0xFFF8F6FF);
+  static const Color softBg = Color(0xFFF8FAFC);
+  static const Color softSurface = Color(0xFFF1F5F9);
   static const Color softCard = Color(0xFFFFFFFF);
-  static const Color softShadow = Color(0x1A5E4BDA);
+  static const Color softShadow = Color(0x140F172A);
 
   // Accent Colors
-  static const Color accent = Color(0xFF00D4FF);
-  static const Color accentDark = Color(0xFF00A8D9);
+  static const Color accent = Color(0xFF2563EB);
+  static const Color accentDark = Color(0xFF1D4ED8);
 
   // Status Colors
-  static const Color success = Color(0xFF10B981);
-  static const Color successLight = Color(0xFFA7F3D0);
+  static const Color success = Color(0xFF16A34A);
+  static const Color successLight = Color(0xFFBBF7D0);
   static const Color successBg = Color(0xFFF0FDF4);
 
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color warningLight = Color(0xFFFCD34D);
-  static const Color warningBg = Color(0xFFFEF3C7);
+  static const Color warning = Color(0xFFD97706);
+  static const Color warningLight = Color(0xFFFDE68A);
+  static const Color warningBg = Color(0xFFFFFBEB);
 
-  static const Color error = Color(0xFFEF4444);
-  static const Color errorLight = Color(0xFFFEE2E2);
+  static const Color error = Color(0xFFDC2626);
+  static const Color errorLight = Color(0xFFFECACA);
   static const Color errorBg = Color(0xFFFEF2F2);
 
-  static const Color info = Color(0xFF3B82F6);
-  static const Color infoLight = Color(0xFFDBEAFE);
-  static const Color infoBg = Color(0xFFF0F9FF);
+  static const Color info = Color(0xFF2563EB);
+  static const Color infoLight = Color(0xFFBFDBFE);
+  static const Color infoBg = Color(0xFFEFF6FF);
 
   // Neutral Colors - Light Theme
-  static const Color lightBg = Color(0xFFF9F8FF);
+  static const Color lightBg = Color(0xFFF8FAFC);
   static const Color lightCardBg = Color(0xFFFFFFFF);
-  static const Color lightText = Color(0xFF1A1A2E);
-  static const Color lightTextSecondary = Color(0xFF757575);
-  static const Color lightBorder = Color(0xFFE8E6F0);
-  static const Color lightDivider = Color(0xFFF0EFFF);
+  static const Color lightText = Color(0xFF0F172A);
+  static const Color lightTextSecondary = Color(0xFF475569);
+  static const Color lightBorder = Color(0xFFE2E8F0);
+  static const Color lightDivider = Color(0xFFE5E7EB);
 
   // Neutral Colors - Dark Theme
-  static const Color darkBg = Color(0xFF0F0F1E);
-  static const Color darkCardBg = Color(0xFF1A1A2E);
-  static const Color darkText = Color(0xFFFAFAFA);
-  static const Color darkTextSecondary = Color(0xFFB0B0B0);
-  static const Color darkBorder = Color(0xFF2D2D4A);
-  static const Color darkDivider = Color(0xFF252540);
+  static const Color darkBg = Color(0xFF0F172A);
+  static const Color darkCardBg = Color(0xFF1E293B);
+  static const Color darkText = Color(0xFFF8FAFC);
+  static const Color darkTextSecondary = Color(0xFFCBD5E1);
+  static const Color darkBorder = Color(0xFF334155);
+  static const Color darkDivider = Color(0xFF273449);
 
   // Subject Colors - used as tags
   static const List<Color> subjectColors = [
@@ -77,9 +77,9 @@ class AppColors {
   // Get contrasting text color for a background
   static Color getContrastingTextColor(Color backgroundColor) {
     // Calculate luminance
-    final luminance = (0.299 * backgroundColor.red +
-            0.587 * backgroundColor.green +
-            0.114 * backgroundColor.blue) /
+        final luminance = (0.299 * backgroundColor.r * 255 +
+          0.587 * backgroundColor.g * 255 +
+          0.114 * backgroundColor.b * 255) /
         255;
     return luminance > 0.5 ? darkText : lightText;
   }

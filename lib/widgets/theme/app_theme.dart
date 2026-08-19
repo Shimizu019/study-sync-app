@@ -18,7 +18,6 @@ class AppTheme {
       primary: AppColors.primary,
       secondary: AppColors.accent,
       surface: AppColors.lightCardBg,
-      background: AppColors.lightBg,
       error: AppColors.error,
     ),
     scaffoldBackgroundColor: AppColors.softBg,
@@ -51,7 +50,7 @@ class AppTheme {
     // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.lightCardBg,
+      fillColor: AppColors.softSurface,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppConstants.spacingMd,
         vertical: AppConstants.spacingMd,
@@ -60,6 +59,7 @@ class AppTheme {
         color: AppColors.primary,
         fontWeight: FontWeight.w500,
       ),
+      floatingLabelStyle: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
       hintStyle: TextStyle(
         color: AppColors.lightTextSecondary,
         fontWeight: FontWeight.w400,
@@ -87,6 +87,7 @@ class AppTheme {
           width: AppConstants.inputFocusedBorderWidth,
         ),
       ),
+      errorStyle: const TextStyle(color: Color(0xFF991B1B), fontWeight: FontWeight.w600),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
         borderSide: const BorderSide(
@@ -215,7 +216,6 @@ class AppTheme {
       primary: AppColors.primaryLight,
       secondary: AppColors.accent,
       surface: AppColors.darkCardBg,
-      background: AppColors.darkBg,
       error: AppColors.error,
     ),
     scaffoldBackgroundColor: AppColors.darkBg,
@@ -248,7 +248,7 @@ class AppTheme {
     // Input Decoration Theme
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.darkCardBg,
+      fillColor: Color(0xFF273449),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppConstants.spacingMd,
         vertical: AppConstants.spacingMd,
@@ -257,6 +257,7 @@ class AppTheme {
         color: AppColors.primaryLight,
         fontWeight: FontWeight.w500,
       ),
+      floatingLabelStyle: const TextStyle(color: AppColors.primaryLight, fontWeight: FontWeight.w600),
       hintStyle: TextStyle(
         color: AppColors.darkTextSecondary,
         fontWeight: FontWeight.w400,
@@ -284,6 +285,7 @@ class AppTheme {
           width: AppConstants.inputFocusedBorderWidth,
         ),
       ),
+      errorStyle: const TextStyle(color: Color(0xFFFCA5A5), fontWeight: FontWeight.w600),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppConstants.radiusMd),
         borderSide: const BorderSide(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'widgets/theme/app_theme.dart';
+import 'widgets/theme/theme_controller.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/splash/splash_screen.dart';
 
@@ -8,19 +9,32 @@ void main() {
   runApp(const StudySyncApp());
 }
 
-class StudySyncApp extends StatelessWidget {
+class StudySyncApp extends StatefulWidget {
   const StudySyncApp({super.key});
 
   @override
+  State<StudySyncApp> createState() => _StudySyncAppState();
+}
+
+class _StudySyncAppState extends State<StudySyncApp> {
+  @override
+  void initState() {
+    super.initState();
+    StudySyncThemeController.load();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Study Sync',
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: StudySyncThemeController.mode,
+      builder: (context, mode, _) => MaterialApp(
+      title: 'StudySync',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: const AppEntry(),
-    );
+      themeMode: mode,
+      home: AppEntry(onThemeModeChanged: StudySyncThemeController.setMode, themeMode: mode),
+    ));
   }
 }
 
@@ -29,7 +43,10 @@ class StudySyncApp extends StatelessWidget {
 /// - Returning user (already onboarded) -> straight to LoginScreen
 ///   (swap this for HomeDashboard later once you check for a saved auth token)
 class AppEntry extends StatefulWidget {
-  const AppEntry({super.key});
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
+
+  const AppEntry({super.key, required this.themeMode, required this.onThemeModeChanged});
 
   @override
   State<AppEntry> createState() => _AppEntryState();
@@ -67,6 +84,6 @@ class _AppEntryState extends State<AppEntry> {
     }
 
     // Returning user: skip onboarding entirely.
-    return const LoginScreen();
+    return LoginScreen(themeMode: widget.themeMode, onThemeModeChanged: widget.onThemeModeChanged);
   }
 }

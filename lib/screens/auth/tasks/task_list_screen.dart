@@ -13,6 +13,7 @@ class TaskListScreen extends StatefulWidget {
 class _TaskListScreenState extends State<TaskListScreen> {
   List<dynamic> _tasks = [];
   bool _isLoading = true;
+  String? _loadError;
 
   @override
   void initState() {
@@ -21,15 +22,17 @@ class _TaskListScreenState extends State<TaskListScreen> {
   }
 
   Future<void> _loadTasks() async {
-    setState(() => _isLoading = true);
-    final result = await TaskService.getTasks(widget.userId);
-    if (result["statusCode"] == 200) {
-      setState(() {
-        _tasks = result["body"]["tasks"];
-        _isLoading = false;
-      });
-    } else {
-      setState(() => _isLoading = false);
+    if (mounted) setState(() { _isLoading = true; _loadError = null; });
+    try {
+      final result = await TaskService.getTasks(widget.userId);
+      if (!mounted) return;
+      if (result["statusCode"] == 200 && result["body"]["tasks"] is List) {
+        setState(() { _tasks = List<dynamic>.from(result["body"]["tasks"]); _isLoading = false; });
+      } else {
+        setState(() { _isLoading = false; _loadError = "We couldn't load your tasks."; });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _isLoading = false; _loadError = "We couldn't load your tasks. Check your connection and try again."; });
     }
   }
 
@@ -46,13 +49,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F1FF),
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text("Task List"),
-        backgroundColor: const Color(0xFFF3F1FF),
+        backgroundColor: scheme.surface,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: scheme.onSurface,
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF5B4FE9),
@@ -67,7 +71,9 @@ class _TaskListScreenState extends State<TaskListScreen> {
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : _tasks.isEmpty
+            : _loadError != null
+              ? Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_loadError!, textAlign: TextAlign.center), const SizedBox(height: 12), ElevatedButton(onPressed: _loadTasks, child: const Text("Try again"))]))
+              : _tasks.isEmpty
               ? const Center(child: Text("No tasks yet.", style: TextStyle(color: Colors.grey)))
               : RefreshIndicator(
                   onRefresh: _loadTasks,
@@ -80,10 +86,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
                       final subjectColor = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
 
                       return Container(
+                        key: ValueKey('task-card-${task["id"] ?? index}-${(task["title"] ?? "").toString().trim()}'),
                         margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: scheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -108,7 +115,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(task["title"] ?? "",
+                                  Text((task["title"] ?? "").toString().trim(),
                                       style: TextStyle(
                                         fontWeight: FontWeight.w600,
                                         decoration: task["status"] == "completed"
@@ -118,8 +125,8 @@ class _TaskListScreenState extends State<TaskListScreen> {
                                   if (task["subject_name"] != null)
                                     Text(task["subject_name"],
                                         style: TextStyle(color: subjectColor, fontSize: 12)),
-                                  Text("Due: ${task["due_date"]}",
-                                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                                    Text("Due: ${task["due_date"]}",
+                                      style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12)),
                                 ],
                               ),
                             ),

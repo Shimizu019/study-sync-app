@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import '../../widgets/theme/app_colors.dart';
 import 'signup_screen.dart';
+import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final ThemeMode themeMode;
+  final ValueChanged<ThemeMode> onThemeModeChanged;
+
+  const LoginScreen({super.key, this.themeMode = ThemeMode.system, this.onThemeModeChanged = _ignoreThemeChange});
+
+  static void _ignoreThemeChange(ThemeMode _) {}
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -78,6 +84,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 builder: (context) => HomeDashboard(
                   userName: result["body"]["user"]["full_name"],
                   userId: int.parse(result["body"]["user"]["id"].toString()),
+                  themeMode: widget.themeMode,
+                  onThemeModeChanged: widget.onThemeModeChanged,
                 ),
               ),
             );
@@ -211,36 +219,22 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                           ),
                         ),
 
-                      TextField(
+                        TextField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                         decoration: InputDecoration(
                           labelText: "Email Address",
                           hintText: "your.email@example.com",
                           prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primary),
-                          filled: true,
-                          fillColor: AppColors.softSurface,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(color: AppColors.lightBorder),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(color: AppColors.lightBorder, width: 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: AppColors.primary, width: 2),
-                          ),
-                          labelStyle: const TextStyle(color: AppColors.primary),
                         ),
                       ),
                       const SizedBox(height: 16),
 
-                      TextField(
+                        TextField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                         decoration: InputDecoration(
                           labelText: "Password",
                           hintText: "Enter your password",
@@ -256,25 +250,17 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                               setState(() => _obscurePassword = !_obscurePassword);
                             },
                           ),
-                          filled: true,
-                          fillColor: AppColors.softSurface,
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(color: AppColors.lightBorder),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: BorderSide(color: AppColors.lightBorder, width: 1.5),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: AppColors.primary, width: 2),
-                          ),
-                          labelStyle: const TextStyle(color: AppColors.primary),
                         ),
                       ),
                       const SizedBox(height: 24),
+
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: TextButton(
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())),
+                          child: const Text('Forgot password?'),
+                        ),
+                      ),
 
                       SizedBox(
                         width: double.infinity,

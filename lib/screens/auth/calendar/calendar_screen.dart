@@ -13,6 +13,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   List<dynamic> _tasks = [];
   List<dynamic> _classes = [];
   bool _isLoading = true;
+  String? _loadError;
   DateTime _selectedDate = DateTime.now();
 
   final List<String> _dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -24,16 +25,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _loadCalendar() async {
-    setState(() => _isLoading = true);
-    final result = await CalendarService.getCalendarData(widget.userId);
-    if (result["statusCode"] == 200) {
-      setState(() {
-        _tasks = result["body"]["tasks"];
-        _classes = result["body"]["recurring_classes"];
-        _isLoading = false;
-      });
-    } else {
-      setState(() => _isLoading = false);
+    if (mounted) setState(() { _isLoading = true; _loadError = null; });
+    try {
+      final result = await CalendarService.getCalendarData(widget.userId);
+      if (!mounted) return;
+      if (result["statusCode"] == 200 && result["body"] is Map) {
+        setState(() {
+          _tasks = result["body"]["tasks"] is List ? List<dynamic>.from(result["body"]["tasks"]) : [];
+          _classes = result["body"]["recurring_classes"] is List ? List<dynamic>.from(result["body"]["recurring_classes"]) : [];
+          _isLoading = false;
+        });
+      } else {
+        setState(() { _isLoading = false; _loadError = "We couldn't load your calendar."; });
+      }
+    } catch (_) {
+      if (mounted) setState(() { _isLoading = false; _loadError = "We couldn't load your calendar. Check your connection and try again."; });
     }
   }
 
@@ -50,24 +56,27 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final itemsForDay = [..._classesForSelectedDate, ..._tasksForSelectedDate];
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F1FF),
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text("Calendar"),
-        backgroundColor: const Color(0xFFF3F1FF),
+        backgroundColor: scheme.surface,
         elevation: 0,
-        foregroundColor: Colors.black,
+        foregroundColor: scheme.onSurface,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
+            : _loadError != null
+              ? Center(child: Padding(padding: const EdgeInsets.all(24), child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_loadError!, textAlign: TextAlign.center), const SizedBox(height: 12), ElevatedButton(onPressed: _loadCalendar, child: const Text("Try again"))])))
+              : Column(
               children: [
                 Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
+                  decoration: BoxDecoration(color: scheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(16)),
                   child: CalendarDatePicker(
                     initialDate: _selectedDate,
                     firstDate: DateTime(2020),
@@ -92,7 +101,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               margin: const EdgeInsets.only(bottom: 10),
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: scheme.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border(left: BorderSide(color: color, width: 4)),
                               ),
@@ -104,12 +113,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(item["title"] ?? "", style: const TextStyle(fontWeight: FontWeight.w600)),
+                                        Text(item["title"] ?? "", style: TextStyle(fontWeight: FontWeight.w600, color: scheme.onSurface)),
                                         Text(
                                           isClass
                                               ? "${item["start_time"]} - ${item["end_time"]}"
                                               : "Due: ${item["due_time"] ?? "No time set"}",
-                                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                          style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 12),
                                         ),
                                       ],
                                     ),
