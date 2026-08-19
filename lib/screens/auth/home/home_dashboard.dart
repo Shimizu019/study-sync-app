@@ -1,5 +1,9 @@
 ﻿import 'package:flutter/material.dart';
 import '../../../services/subject_service.dart';
+import '../../../widgets/theme/app_colors.dart';
+import '../../../widgets/theme/app_constants.dart';
+import '../../../widgets/theme/app_widgets.dart';
+import '../../../widgets/theme/app_animations.dart';
 import '../tasks/task_list_screen.dart';
 import '../profile/profile_screen.dart';
 import '../calendar/calendar_screen.dart';
@@ -19,6 +23,7 @@ class HomeDashboard extends StatefulWidget {
 class _HomeDashboardState extends State<HomeDashboard> {
   List<dynamic> _subjects = [];
   bool _isLoading = true;
+  int _selectedNavIndex = 0;
 
   @override
   void initState() {
@@ -51,6 +56,8 @@ class _HomeDashboardState extends State<HomeDashboard> {
   }
 
   void _onNavTap(int index) {
+    setState(() => _selectedNavIndex = index);
+    
     if (index == 1) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => TaskListScreen(userId: widget.userId)));
     } else if (index == 2) {
@@ -62,98 +69,287 @@ class _HomeDashboardState extends State<HomeDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFFF3F1FF),
-      floatingActionButton: FloatingActionButton.extended(
-        backgroundColor: const Color(0xFF5B4FE9),
-        icon: const Icon(Icons.timer, color: Colors.white),
-        label: const Text("Study", style: TextStyle(color: Colors.white)),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => StartSessionScreen(userId: widget.userId)),
-          );
-        },
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+      floatingActionButton: AppAnimations.scaleAnimation(
+        child: FloatingActionButton.extended(
+          backgroundColor: AppColors.primary,
+          elevation: AppConstants.elevationLg,
+          icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 24),
+          label: const Text(
+            "Start Session",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => StartSessionScreen(userId: widget.userId)),
+            );
+          },
+        ),
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
+        child: AppAnimations.fadeAnimation(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Hello, ${widget.userName}", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 4),
-              const Text("Welcome back to Study Sync", style: TextStyle(color: Colors.grey)),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text("My Subjects", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                  TextButton(
-                    onPressed: _goToSubjects,
-                    child: const Text("Manage", style: TextStyle(color: Color(0xFF5B4FE9))),
+              // Header Section
+              Container(
+                padding: AppConstants.paddingLg,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.darkCardBg : Colors.white,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(AppConstants.radiusLg),
+                    bottomRight: Radius.circular(AppConstants.radiusLg),
                   ),
-                ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.1),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Hello, ${widget.userName}! 👋",
+                      style: Theme.of(context).textTheme.displaySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Welcome back to Study Sync",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(height: AppConstants.spacingLg),
+              
+              // Main Content
               Expanded(
-                child: _isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : _subjects.isEmpty
-                        ? Center(
-                            child: TextButton(
-                              onPressed: _goToSubjects,
-                              child: const Text("No subjects yet — tap to add one"),
+                child: SingleChildScrollView(
+                  padding: AppConstants.paddingSymmetricH,
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Quick Stats Row
+                      AppAnimations.slideAnimation(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: _quickStatCard(
+                                context,
+                                icon: Icons.book_rounded,
+                                label: "Subjects",
+                                value: _subjects.length.toString(),
+                                color: AppColors.primary,
+                              ),
                             ),
-                          )
-                        : ListView.builder(
-                            itemCount: _subjects.length,
-                            itemBuilder: (context, index) {
-                              final subject = _subjects[index];
-                              final colorHex = subject["color_tag"] ?? "#5B4FE9";
-                              final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border(left: BorderSide(color: color, width: 4)),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(subject["subject_name"] ?? "",
-                                              style: const TextStyle(fontWeight: FontWeight.w600)),
-                                          Text(
-                                            "${subject["subject_code"] ?? ""} • ${subject["instructor"] ?? ""}",
-                                            style: const TextStyle(color: Colors.grey, fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                            const SizedBox(width: AppConstants.spacingMd),
+                            Expanded(
+                              child: _quickStatCard(
+                                context,
+                                icon: Icons.timer_rounded,
+                                label: "Study Time",
+                                value: "0h",
+                                color: AppColors.success,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppConstants.spacingXl),
+                      
+                      // My Subjects Section
+                      AppWidgets.sectionHeader(
+                        context: context,
+                        title: "My Subjects",
+                        actionLabel: _subjects.isEmpty ? null : "Manage",
+                        onAction: _subjects.isEmpty ? null : _goToSubjects,
+                      ),
+                      const SizedBox(height: AppConstants.spacingMd),
+                      
+                      // Subjects List or Empty State
+                      _buildSubjectsContent(),
+                      const SizedBox(height: AppConstants.spacing2xl),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
+        currentIndex: _selectedNavIndex,
         onTap: _onNavTap,
-        selectedItemColor: const Color(0xFF5B4FE9),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.list), label: "Tasks"),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: "Calendar"),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: "Home",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.checklist_rounded),
+            label: "Tasks",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_month_rounded),
+            label: "Calendar",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded),
+            label: "Profile",
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubjectsContent() {
+    if (_isLoading) {
+      return Column(
+        children: [
+          AppWidgets.loadingSkeleton(width: double.infinity, height: 100),
+          const SizedBox(height: AppConstants.spacingMd),
+          AppWidgets.loadingSkeleton(width: double.infinity, height: 100),
+        ],
+      );
+    }
+
+    if (_subjects.isEmpty) {
+      return AppWidgets.emptyState(
+        context: context,
+        icon: Icons.library_books_rounded,
+        title: "No Subjects Yet",
+        description: "Create your first subject to start organizing your study materials",
+        actionButton: AppWidgets.primaryButton(
+          label: "Add Subject",
+          onPressed: _goToSubjects,
+        ),
+      );
+    }
+
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _subjects.length,
+      itemBuilder: (context, index) {
+        final subject = _subjects[index];
+        final colorHex = subject["color_tag"] ?? "#5B4FE9";
+        final color = Color(int.parse(colorHex.replaceFirst('#', '0xFF')));
+
+        return AppAnimations.slideAnimation(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: AppConstants.spacingMd),
+            child: AppWidgets.accentCard(
+              context: context,
+              accentColor: color,
+              child: Padding(
+                padding: AppConstants.paddingCard,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          height: 12,
+                          width: 12,
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: AppConstants.spacingMd),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                subject["subject_name"] ?? "Unnamed Subject",
+                                style: Theme.of(context).textTheme.headlineSmall,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "${subject["subject_code"] ?? "CODE"} • ${subject["instructor"] ?? "Unknown"}",
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_rounded,
+                          size: 16,
+                          color: AppColors.primary,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _quickStatCard(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
+    return Container(
+      padding: AppConstants.paddingCard,
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkCardBg : Colors.white,
+        border: Border.all(
+          color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+        ),
+        borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            height: 40,
+            width: 40,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(AppConstants.radiusMd),
+            ),
+            child: Icon(icon, color: color, size: 20),
+          ),
+          const SizedBox(height: AppConstants.spacingMd),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     );

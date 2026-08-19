@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'widgets/theme/app_theme.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/splash/splash_screen.dart';
 
@@ -15,11 +16,9 @@ class StudySyncApp extends StatelessWidget {
     return MaterialApp(
       title: 'Study Sync',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: const Color(0xFF5B4FE9),
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF5B4FE9)),
-        useMaterial3: true,
-      ),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       home: const AppEntry(),
     );
   }
